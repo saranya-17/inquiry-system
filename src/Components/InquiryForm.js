@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './inquiryForm.css';
-import { companies, departments, recipients } from './constant';
-
+import IssueTypeSelector from './IssueTypeSelector';
+import DepartmentSelector from './DepartmentSelector';
+import RecipientSelector from './RecipientSelector';
+import SupportingDocumentSection from './SupportingDocumentSection';
+import DeadLineDateComponent from './DeadlineDateComponent';
+import CompanySelector from './CompanySelecter'
+import Issue from './Issue';
+import ChoicesList from './ChoicesList';
+import Note from './Note';
+import ButtonSection from './ButtonSection';
 
 const InquiryForm = () => {
+  const fileInputRef= useRef(null)
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [issueType, setIssueType] = useState('');
   const [department, setDepartment] = useState('');
@@ -88,6 +97,9 @@ const InquiryForm = () => {
   }
 
   const handleDelete = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
     setIssueType('');
     setDepartment('');
     setSelectedCompanies([]);
@@ -103,138 +115,16 @@ const InquiryForm = () => {
   return (
     <div className="inquiry-form">
       <h1>Send Inquiry</h1>
-
-      <div className="form-field">
-        <label htmlFor="issue-type">Issue Type:</label>
-        <select
-          id="issue-type"
-          value={issueType}
-          onChange={handleIssueTypeChange}
-          className="select-field"
-        >
-          <option value="">Select Type</option>
-          <option value="urgent">Urgent</option>
-          <option value="typical">Typical</option>
-        </select>
-      </div>
-
-      <div className="form-field">
-        <label htmlFor="department">Related Department:</label>
-        <select
-          id="department"
-          value={department}
-          onChange={handleDepartmentChange}
-          className="select-field"
-        >
-          <option value="">Select Department</option>
-          {departments.map((dept) => (
-            <option key={dept} value={dept}>
-              {dept}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form-field">
-        <label htmlFor="company">Relating to Which:</label>
-        <ul className="companies-list">
-          {companies.map((company) => (
-            <li key={company.name} className="company-item">
-              <label>
-                <input
-                  type="checkbox"
-                  value={company.name}
-                  checked={selectedCompanies.includes(company.name)}
-                  onChange={handleCompanyChange}
-                />
-                <img src={company.logo} alt={company.name} className="company-logo" />
-              </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="form-field">
-        <label>Direct it to:</label>
-        <ul className="recipient-list">
-          {recipients.map((recipient) => (
-            <li
-              key={recipient.name}
-              className={`recipient-item ${selectedRecipient === recipient.name ? 'selected' : ''}`}
-              onClick={() => handleRecipientClick(recipient.name)}
-            >
-              <img src={recipient.avatar} alt={recipient.name} className="recipient-avatar" />
-              <span className="recipient-name">{recipient.name}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-
-      <div className="form-field">
-        <label htmlFor="issue-input">Issue:</label>
-        <textarea
-          id="issue-input"
-          value={issueInput}
-          onChange={handleIssueInputChange}
-          className="textarea-field"
-        />
-      </div>
-
-      <div className="form-field">
-        <label>Choices:</label>
-        <ul className="choices-list">
-          {choices.length>0&&choices.map((choice) => (
-            <li
-              key={choice}
-              className={`choice-item ${selectedChoice === choice ? 'selected' : ''}`}
-              onClick={() => handleChoiceClick(choice)}
-            >
-              {choice}
-            </li>
-          ))}
-        </ul>
-        <button className="add-choice-btn" onClick={handleChoiceAdd}>Add Choice</button>
-      </div>
-
-      <div className="form-field">
-        <label htmlFor="note">Note:</label>
-        <textarea
-          id="note"
-          value={note}
-          onChange={handleNoteChange}
-          className="textarea-field"
-        />
-      </div>
-
-      <div className="form-field">
-        <label htmlFor="supporting-doc">Supporting Document:</label>
-        <input
-          type="file"
-          id="supporting-doc"
-          accept=".pdf, .doc, .docx"
-          onChange={handleSupportingDocChange}
-          className="input-field"
-        />
-      </div>
-
-
-      <div className="form-field">
-        <label htmlFor="deadline">Deadline:</label>
-        <input
-          type="date"
-          id="deadline"
-          value={deadline}
-          onChange={handleDeadlineChange}
-          className="input-field"
-        />
-      </div>
-
-      <div className="form-actions">
-        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-        <button className="save-btn">Save</button>
-        <button className="delete-btn" onClick={handleDelete}>Delete</button>
-      </div>
+      <IssueTypeSelector issueType={issueType} handleIssueTypeChange={handleIssueTypeChange}/>
+      <DepartmentSelector department={department} handleDepartmentChange={handleDepartmentChange}/>
+      <CompanySelector selectedCompanies={selectedCompanies ||[]} handleCompanyChange={handleCompanyChange}/>
+      <RecipientSelector selectedRecipient={selectedRecipient} handleRecipientClick={handleRecipientClick}/>
+      <Issue issueInput={issueInput} handleIssueInputChange={handleIssueInputChange}/>
+      <ChoicesList choices={choices} selectedChoice={selectedChoice} handleChoiceClick={handleChoiceClick} handleChoiceAdd={handleChoiceAdd}/>
+      <Note note={note} handleNoteChange={handleNoteChange}/>
+      <SupportingDocumentSection fileInputRef={fileInputRef} handleSupportingDocChange={handleSupportingDocChange}/>
+      <DeadLineDateComponent deadline={deadline} handleDeadlineChange={handleDeadlineChange}/>
+      <ButtonSection handleSubmit={handleSubmit} handleSave={handleSave} handleDelete={handleDelete}/>
     </div>
   );
 };
