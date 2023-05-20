@@ -177,7 +177,3 @@
       opacity: 1;
     }
   }
-  
-  .fade-in-element {
-    animation: fade-in 1s ease-in-out;
-  }
